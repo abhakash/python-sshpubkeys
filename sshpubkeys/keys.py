@@ -39,7 +39,6 @@ __all__ = ["AuthorizedKeysFile", "SSHKey"]
 class _ECVerifyingKey:
     """ecdsa.key.VerifyingKey reimplementation
     """
-
     def __init__(self, pubkey, default_hashfunc):
         self.pubkey = pubkey
         self.default_hashfunc = default_hashfunc
@@ -57,9 +56,9 @@ class _ECVerifyingKey:
     def to_string(self, encoding="raw"):
         """Pub key as bytes string"""
         if encoding == "raw":
-            return self.pubkey.public_numbers().encode_point()[1:]
+            return self.pubkey.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint)[1:]
         if encoding == "uncompressed":
-            return self.pubkey.public_numbers().encode_point()
+            return self.pubkey.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint)
         if encoding == "compressed":
             return self.pubkey.public_bytes(Encoding.X962, PublicFormat.CompressedPoint)
         raise ValueError(encoding)
@@ -85,7 +84,6 @@ class AuthorizedKeysFile:  # pylint:disable=too-few-public-methods
     """Represents a full authorized_keys file.
 
     Comments and empty lines are ignored."""
-
     def __init__(self, file_obj, **kwargs):
         self.keys = []
         self.parse(file_obj, **kwargs)
@@ -201,7 +199,7 @@ class SSHKey:  # pylint:disable=too-many-instance-attributes
 
         Deprecated, use .hash_md5() instead."""
         warnings.warn("hash() is deprecated. Use hash_md5(), hash_sha256() or hash_sha512() instead.")
-        return self.hash_md5().replace(b"MD5:", b"")
+        return self.hash_md5().replace("MD5:", "")
 
     def hash_md5(self):
         """Calculate md5 fingerprint.
@@ -249,7 +247,7 @@ class SSHKey:  # pylint:disable=too-many-instance-attributes
         """Calculate two's complement."""
         if sys.version < '3':
             # this does not exist in python 3 - undefined-variable disabled to make pylint happier.
-            ret = long(0)  # pylint:disable=undefined-variable
+            ret = 0  # pylint:disable=undefined-variable
             for byte in data:
                 ret = (ret << 8) + ord(byte)
         else:
