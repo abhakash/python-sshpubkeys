@@ -8,7 +8,7 @@ with codecs_open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='sshpubkeys',
+    name='py3sshpubkeys',
     version='3.4.0',
     description='SSH public key parser',
     long_description=long_description,
