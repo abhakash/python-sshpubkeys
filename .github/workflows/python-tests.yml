@@ -1,6 +1,8 @@
 name: Run python tests
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -8,19 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pycodestyle isort pylint yapf
+        pip install pycodestyle isort pylint pytest setuptools yapf
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
     - name: Check pycodestyle
       run: |
         pycodestyle --ignore E501,E402 --exclude=.git,dev3 sshpubkeys tests
@@ -29,7 +32,7 @@ jobs:
         pylint sshpubkeys tests
     - name: Run tests
       run: |
-        python3 setup.py test
+        pytest
     - name: Check formatting
       run: |
         isort --recursive sshpubkeys tests; yapf --recursive -i .

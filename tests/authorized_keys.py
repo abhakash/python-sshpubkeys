@@ -1,4 +1,4 @@
-from .valid_keys import keys
+from valid_keys import keys
 
 items = [
     ["empty_file", "", 0],

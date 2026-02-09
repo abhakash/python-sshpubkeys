@@ -4,14 +4,14 @@ New test is generated for each key so that running unittests gives out meaningfu
 
 """
 
-from .authorized_keys import items as list_of_authorized_keys
-from .invalid_authorized_keys import items as list_of_invalid_authorized_keys
-from .invalid_keys import keys as list_of_invalid_keys
-from .invalid_options import options as list_of_invalid_options
-from .valid_keys import keys as list_of_valid_keys
-from .valid_keys_rfc4716 import keys as list_of_valid_keys_rfc4716
-from .valid_options import options as list_of_valid_options
+from authorized_keys import items as list_of_authorized_keys
+from invalid_authorized_keys import items as list_of_invalid_authorized_keys
+from invalid_keys import keys as list_of_invalid_keys
+from invalid_options import options as list_of_invalid_options
 from sshpubkeys import AuthorizedKeysFile, InvalidOptionsError, SSHKey
+from valid_keys import keys as list_of_valid_keys
+from valid_keys_rfc4716 import keys as list_of_valid_keys_rfc4716
+from valid_options import options as list_of_valid_options
 
 import sys
 import unittest
@@ -32,7 +32,7 @@ class TestMisc(unittest.TestCase):
 
 
 class TestKeys(unittest.TestCase):
-    def check_key(self, pubkey, bits, fingerprint_md5, fingerprint_sha256, options, comment, **kwargs):  # pylint:disable=too-many-arguments
+    def check_key(self, pubkey, bits, fingerprint_md5, fingerprint_sha256, options, comment, **kwargs):  # pylint: disable=too-many-positional-arguments,too-many-arguments
         """ Checks valid key """
         ssh = SSHKey(pubkey, **kwargs)
         ssh.parse()
@@ -100,7 +100,6 @@ class TestAuthorizedKeys(unittest.TestCase):
 
 def loop_options(options):
     """ Loop over list of options and dynamically create tests """
-
     def ch(option, parsed_option):
         return lambda self: self.check_valid_option(option, parsed_option)
 
@@ -120,8 +119,7 @@ def loop_invalid_options(options):
 
 def loop_valid(keyset, prefix):
     """ Loop over list of valid keys and dynamically create tests """
-
-    def ch(pubkey, bits, fingerprint_md5, fingerprint_sha256, options, comment, **kwargs):  # pylint:disable=too-many-arguments
+    def ch(pubkey, bits, fingerprint_md5, fingerprint_sha256, options, comment, **kwargs):  # pylint: disable=too-many-positional-arguments,too-many-arguments
         return lambda self: self.check_key(pubkey, bits, fingerprint_md5, fingerprint_sha256, options, comment, **kwargs)
 
     for items in keyset:
@@ -145,7 +143,6 @@ def loop_valid(keyset, prefix):
 
 def loop_invalid(keyset, prefix):
     """ Loop over list of invalid keys and dynamically create tests """
-
     def ch(pubkey, expected_error, **kwargs):
         return lambda self: self.check_fail(pubkey, expected_error, **kwargs)
 
